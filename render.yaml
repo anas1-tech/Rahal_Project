@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: rahal
+    runtime: docker
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: DATABASE_URL
+        sync: false   # paste your Neon connection string in the Render dashboard
