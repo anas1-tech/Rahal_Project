@@ -101,7 +101,7 @@ class PgCompatConnection
             $dsn,
             isset($p['user']) ? urldecode($p['user']) : null,
             isset($p['pass']) ? urldecode($p['pass']) : null,
-            [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+            [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_PERSISTENT => PHP_SAPI !== 'cli']
         );
     }
 
