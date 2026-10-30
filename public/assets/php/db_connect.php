@@ -1,20 +1,24 @@
 <?php
 // db_connect.php
 
-// 1. إعدادات الاتصال (لخادم XAMPP الافتراضي)
-$servername = "localhost";
-$username = "root";
-$password = ""; 
-$database = "r7al"; // تأكد من استخدام اسم قاعدة البيانات الصحيح
+// 1. إعدادات الاتصال
+// On Render: set DATABASE_URL (Neon connection string). Locally: falls back to the old XAMPP/MySQL-style defaults below.
+require_once __DIR__ . '/pg_compat.php';
+
+$database_url = getenv('DATABASE_URL');
+if (!$database_url) {
+    $database_url = 'postgresql://postgres:@localhost:5432/r7al';
+}
 
 // 2. إنشاء الاتصال
-$conn = new mysqli($servername, $username, $password, $database);
-$conn->set_charset("utf8mb4");
-
-// 3. التحقق من الاتصال
-if ($conn->connect_error) {
-    die("فشل الاتصال: " . $conn->connect_error);
+try {
+    $conn = new PgCompatConnection($database_url);
+} catch (Throwable $e) {
+    error_log('DB connection failed: ' . $e->getMessage());
+    http_response_code(500);
+    die("فشل الاتصال بقاعدة البيانات");
 }
+$conn->set_charset("utf8mb4");
 
 // التحقق من عدم تعريف الدوال مسبقاً
 if (!function_exists('get_regions')) {
